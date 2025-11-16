@@ -1,48 +1,35 @@
-// db.js
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-const uri = process.env.MONGO_URI;
-const dbName = process.env.DB_NAME;
-
-const client = new MongoClient(uri);
+const client = new MongoClient(process.env.MONGO_URL);
 
 let db;
-let featuresCollection;
-let servicesCollection;
-let pricingCollection;
 
 async function connectDB() {
   try {
     await client.connect();
-    console.log('Connected to MongoDB');
-    db = client.db(dbName);
-    featuresCollection = db.collection('features'); // Your collection name
-    servicesCollection = db.collection('services');
-    pricingCollection = db.collection('pricing');
+    db = client.db(process.env.DB_NAME);
+    console.log(`Connected to MongoDB: ${process.env.DB_NAME}`);
   } catch (err) {
     console.error('MongoDB connection error:', err);
   }
 }
 
 function getFeaturesCollection() {
-  if (!featuresCollection) {
-    throw new Error('Database not connected yet!');
-  }
-  return featuresCollection;
+  return db.collection(process.env.FEATURES_COLLECTION_NAME);
 }
+
 function getServicesCollection() {
-  if (!servicesCollection) {
-    throw new Error('Database not connected yet!');
-  }
-  return servicesCollection;
+  return db.collection(process.env.SERVICES_COLLECTION_NAME);
 }
 
 function getPricingCollection() {
-  if (!pricingCollection) {
-    throw new Error('Database not connected yet!');
-  }
-  return pricingCollection;
+  return db.collection(process.env.PRICING_COLLECTION_NAME);
 }
 
-module.exports = { connectDB, getFeaturesCollection, getServicesCollection, getPricingCollection };
+module.exports = {
+  connectDB,
+  getFeaturesCollection,
+  getServicesCollection,
+  getPricingCollection,
+};
