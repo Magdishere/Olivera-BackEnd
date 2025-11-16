@@ -48,6 +48,7 @@ function loadFeatures() {
                                         </div>
                                     </td>
                                     <td>
+                                      <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-primary me-2"
                                             onclick="openFeatureEditModal('${f._id}', '${f.icon}', '${f.title}', \`${f.description}\`)">
                                             Edit
@@ -56,6 +57,7 @@ function loadFeatures() {
                                             onclick="openFeatureDeleteModal('${f._id}')">
                                             Delete
                                         </button>
+                                        </div>
                                     </td>
                                 </tr>`).join("")}
                         </tbody>
@@ -91,14 +93,16 @@ function loadServices() {
                                         </div>
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary me-2"
-                                            onclick="openServiceEditModal('${s._id}', '${s.icon}', '${s.title}', \`${s.description}\`)">
-                                            Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-danger"
-                                            onclick="openServiceDeleteModal('${s._id}')">
-                                            Delete
-                                        </button>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary me-2"
+                                                onclick="openServiceEditModal('${s._id}', '${s.icon}', '${s.title}', \`${s.description}\`)">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-danger"
+                                                onclick="openServiceDeleteModal('${s._id}')">
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>`).join("")}
                         </tbody>
