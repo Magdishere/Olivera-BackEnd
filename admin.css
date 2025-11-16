@@ -1,0 +1,217 @@
+/* ========================================================= */
+/* ROOT VARIABLES - LIGHT OLIVE OIL THEME WITH DEPTH */
+/* ========================================================= */
+:root {
+    --background-color: #838146;      /* slightly darker cream background */
+    --surface-color: #fefdf3;         /* lighter modal/section surface */
+    --default-color: #3c4a33;         /* olive leaf text */
+    --heading-color: #2f3d27;         /* dark olive for headings */
+    --accent-color: #bfa94f;          /* golden olive accent */
+    --contrast-color: #ffffff;        /* white text on accent */
+    --highlight-color: #f7f6d0;       /* soft olive highlight */
+    --border-color: #e2dfc4;          /* soft borders */
+    --modal-background: #e9e7c4;      /* warm olive-beige for modals */
+    --modal-border: #bfa94f;          /* golden olive for modal border */
+}
+
+/* ========================================================= */
+/* BODY & GENERAL FONT */
+/* ========================================================= */
+body {
+    font-family: "Inter", sans-serif;
+    background-color: var(--background-color);
+    color: var(--default-color);
+    margin: 0;
+    padding: 0;
+}
+
+/* HEADER */
+.header {
+    background: var(--accent-color);
+    text-align: center;
+    padding: 50px 20px;
+    border-bottom: 1px solid var(--accent-color);
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.header h1 {
+    color: var(--heading-color);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: var(--default-color);
+    opacity: 0.85;
+    font-size: 1.1rem;
+}
+
+/* BIG BUTTONS */
+.big-btn {
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.big-btn:hover {
+    background-color: #d1b44a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* CONTENT SECTIONS */
+.content-section {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 30px 25px;
+    background-color: var(--surface-color);
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.content-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+/* SECTION HEADINGS */
+.content-section h3 {
+    color: var(--heading-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* TABLE STYLING */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+.table-light {
+    background: var(--surface-color);
+    color: var(--default-color);
+}
+
+.table-light th {
+    background-color: var(--highlight-color);
+    color: var(--heading-color);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 15px;
+}
+
+.table-light td {
+    background-color: var(--surface-color);
+    color: var(--default-color);
+    vertical-align: middle;
+    padding: 12px 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.table-light tr:hover td {
+    background-color: #ebe9a0; /* slightly darker hover for light olive theme */
+}
+
+
+
+/* BUTTONS */
+.btn-primary {
+    background-color: #7b9153;
+    border: none;
+    color: var(--contrast-color);
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background-color: #8ea965;
+}
+
+.btn-danger {
+    background-color: #c25a3b;
+    border: none;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+}
+
+.btn-danger:hover {
+    background-color: #d17850;
+}
+
+.btn-success {
+    background-color: var(--accent-color);
+    border: none;
+    color: var(--contrast-color);
+    border-radius: 8px;
+    transition: all 0.25s;
+}
+
+.btn-success:hover {
+    background-color: #d1b44a;
+    transform: translateY(-1px);
+}
+
+/* MODALS */
+.modal-content {
+    background-color: var(--modal-border);
+    border-radius: 16px;
+    border: 1px solid var(--modal-border);
+    color: var(--default-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.modal-header h5 {
+    color: var(--heading-color);
+}
+
+.modal-footer button {
+    min-width: 100px;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f5f2e7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .content-section {
+        padding: 20px 15px;
+    }
+    .big-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+        margin: 8px 0;
+    }
+    .header h1 {
+        font-size: 2rem;
+    }
+    .header p {
+        font-size: 1rem;
+    }
+}
