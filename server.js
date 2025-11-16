@@ -157,7 +157,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
   }
   res.json({
     message: 'File uploaded successfully',
-    fileUrl: `http://localhost:3000/uploads/${req.file.filename}`
+    fileUrl: `https://localhost:3000/uploads/${req.file.filename}`
   });
 });
 
@@ -188,7 +188,7 @@ app.post('/send-email', async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at https://localhost:${port}`);
 });
 
 //Get all services
