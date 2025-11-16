@@ -1,4 +1,4 @@
-const API = "https://olivera-backend-s5ul.onrender.com/api";
+const API = "https://olivera-backend-s5ul.onrender.com";
 
 let featureEditId = "";
 let featureDeleteId = "";
