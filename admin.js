@@ -201,7 +201,7 @@ function loadContacts() {
                                     <td>
                                         ${c.selected
                                             ? '<span class="badge bg-success">Active</span>'
-                                            : '<span class="badge bg-secondary">Inactive</span>'
+                                            : '<span class="badge bg-danger">Inactive</span>'
                                         }
                                     </td>
                                     <td>
