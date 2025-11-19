@@ -471,22 +471,16 @@ function addContactFromModal() {
 
     if (!location || !email || !phone) return alert("All fields required");
 
-    // Check if trying to add active contact when one already exists
-    if (selected) {
-        fetch(`${API}/contacts`)
-            .then(res => res.json())
-            .then(data => {
-                const hasActive = data.some(c => c.selected);
-                if (hasActive) {
-                    return alert("There is already an active contact. Please uncheck 'Set as active' or edit the existing active contact.");
-                }
-                // Proceed to add
-                createContact({ location, email, phone, selected });
-            });
-    } else {
-        createContact({ location, email, phone, selected });
-    }
+    fetch(`${API}/contacts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location, email, phone, selected })
+    }).then(() => {
+        closeContactAddModal();
+        loadContacts();
+    });
 }
+
 
 function createContact(contactData) {
     fetch(`${API}/contacts`, {
@@ -502,13 +496,13 @@ function createContact(contactData) {
 
 function openContactEditModal(id, location, email, phone, selected) {
     contactEditId = id;
-
     document.getElementById("contact-edit-location").value = location;
     document.getElementById("contact-edit-email").value = email;
     document.getElementById("contact-edit-phone").value = phone;
     document.getElementById("contact-edit-selected").checked = selected;
 
     new bootstrap.Modal(document.getElementById("contactEditModal")).show();
+
 }
 
 function closeContactEditModal() {
@@ -521,20 +515,16 @@ function saveContactEdit() {
     const phone = document.getElementById("contact-edit-phone").value.trim();
     const selected = document.getElementById("contact-edit-selected").checked;
 
-    if (selected) {
-        // Ensure only one active
-        fetch(`${API}/contacts`)
-            .then(res => res.json())
-            .then(data => {
-                const activeOther = data.some(c => c.selected && c._id !== contactEditId);
-                if (activeOther) {
-                    return alert("There is already another active contact. Uncheck 'Active' first or edit the other contact.");
-                }
-                updateContact({ location, email, phone, selected });
-            });
-    } else {
-        updateContact({ location, email, phone, selected });
-    }
+    if (!location || !email || !phone) return alert("All fields required");
+
+    fetch(`${API}/contacts/${contactEditId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location, email, phone, selected })
+    }).then(() => {
+        closeContactEditModal();
+        loadContacts();
+    });
 }
 
 function updateContact(contactData) {

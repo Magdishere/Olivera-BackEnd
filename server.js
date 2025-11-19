@@ -365,17 +365,24 @@ app.get("/contacts", async (req, res) => {
 app.post("/contacts", async (req, res) => {
   try {
     const contactCollection = getContactCollection();
-    const { location, email, phone } = req.body;
+    const { location, email, phone, selected } = req.body;
 
     if (!location || !email || !phone) {
       return res.status(400).json({ error: "location, email, and phone are required" });
+    }
+
+    if (selected) {
+      await contactCollection.updateMany(
+        { selected: true },
+        { $set: { selected: false } }
+      );
     }
 
     const result = await contactCollection.insertOne({
       location,
       email,
       phone,
-      selected: false
+      selected: !!selected
     });
 
     res.status(201).json({ message: "Contact created", id: result.insertedId });
@@ -385,16 +392,26 @@ app.post("/contacts", async (req, res) => {
   }
 });
 
-// UPDATE a contact
+
+
+// UPDATE a contact (including active status)
 app.put("/contacts/:id", async (req, res) => {
   try {
     const contactCollection = getContactCollection();
     const { id } = req.params;
-    const { location, email, phone } = req.body;
+    const { location, email, phone, selected } = req.body;
+
+    // If this contact is being set as active, deactivate others
+    if (selected) {
+      await contactCollection.updateMany(
+        { _id: { $ne: new ObjectId(id) }, selected: true },
+        { $set: { selected: false } }
+      );
+    }
 
     const result = await contactCollection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { location, email, phone } }
+      { $set: { location, email, phone, selected: !!selected } }
     );
 
     if (result.matchedCount === 0) {
@@ -407,6 +424,7 @@ app.put("/contacts/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to update contact" });
   }
 });
+
 
 // DELETE a contact
 app.delete("/contacts/:id", async (req, res) => {
