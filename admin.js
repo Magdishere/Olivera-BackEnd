@@ -186,7 +186,7 @@ function loadContacts() {
                         <thead>
                             <tr>
                                 <th>Contact Info</th>
-                                <th>Selected</th>
+                                <th>Status</th>
                                 <th style="width:180px;">Actions</th>
                             </tr>
                         </thead>
@@ -201,8 +201,7 @@ function loadContacts() {
                                     <td>
                                         ${c.selected
                                             ? '<span class="badge bg-success">Active</span>'
-                                            : `<button class="btn btn-sm btn-outline-primary"
-                                                        onclick="selectContact('${c._id}')">Select</button>`
+                                            : '<span class="badge bg-secondary">Inactive</span>'
                                         }
                                     </td>
                                     <td>
@@ -210,14 +209,12 @@ function loadContacts() {
                                             onclick="openContactEditModal('${c._id}', '${c.location}', '${c.email}', '${c.phone}', ${c.selected})">
                                             Edit
                                         </button>
-
                                         <button class="btn btn-sm btn-danger"
                                             onclick="openContactDeleteModal('${c._id}')">
                                             Delete
                                         </button>
                                     </td>
-                                </tr>`
-                            ).join("")}
+                                </tr>`).join("")}
                         </tbody>
                     </table>
                 </div>
@@ -225,12 +222,10 @@ function loadContacts() {
         });
 }
 
+
 function selectContact(id) {
-    fetch(`${API}/contacts/select/${id}`, {
-        method: "PATCH"
-    }).then(() => {
-        loadContacts();
-    });
+    fetch(`${API}/contacts/select/${id}`, { method: "PUT" }) // was PATCH
+        .then(() => loadContacts());
 }
 
 
@@ -476,15 +471,34 @@ function addContactFromModal() {
 
     if (!location || !email || !phone) return alert("All fields required");
 
+    // Check if trying to add active contact when one already exists
+    if (selected) {
+        fetch(`${API}/contacts`)
+            .then(res => res.json())
+            .then(data => {
+                const hasActive = data.some(c => c.selected);
+                if (hasActive) {
+                    return alert("There is already an active contact. Please uncheck 'Set as active' or edit the existing active contact.");
+                }
+                // Proceed to add
+                createContact({ location, email, phone, selected });
+            });
+    } else {
+        createContact({ location, email, phone, selected });
+    }
+}
+
+function createContact(contactData) {
     fetch(`${API}/contacts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, email, phone, selected })
+        body: JSON.stringify(contactData)
     }).then(() => {
         closeContactAddModal();
         loadContacts();
     });
 }
+
 
 function openContactEditModal(id, location, email, phone, selected) {
     contactEditId = id;
@@ -507,15 +521,33 @@ function saveContactEdit() {
     const phone = document.getElementById("contact-edit-phone").value.trim();
     const selected = document.getElementById("contact-edit-selected").checked;
 
+    if (selected) {
+        // Ensure only one active
+        fetch(`${API}/contacts`)
+            .then(res => res.json())
+            .then(data => {
+                const activeOther = data.some(c => c.selected && c._id !== contactEditId);
+                if (activeOther) {
+                    return alert("There is already another active contact. Uncheck 'Active' first or edit the other contact.");
+                }
+                updateContact({ location, email, phone, selected });
+            });
+    } else {
+        updateContact({ location, email, phone, selected });
+    }
+}
+
+function updateContact(contactData) {
     fetch(`${API}/contacts/${contactEditId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, email, phone, selected })
+        body: JSON.stringify(contactData)
     }).then(() => {
         closeContactEditModal();
         loadContacts();
     });
 }
+
 
 function openContactDeleteModal(id) {
     contactDeleteId = id;
