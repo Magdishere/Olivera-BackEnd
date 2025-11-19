@@ -6,12 +6,16 @@ let serviceEditId = "";
 let serviceDeleteId = "";
 let pricingEditId = "";
 let pricingDeleteId = "";
+let contactEditId = "";
+let contactDeleteId = "";
+
 
 /* ========================= SECTION SWITCHER ========================= */
 function showSection(section) {
     document.getElementById("features-section").classList.add("d-none");
     document.getElementById("services-section").classList.add("d-none");
     document.getElementById("pricing-section")?.classList.add("d-none");
+    document.getElementById("contacts-section").classList.add("d-none");
 
     if (section === "features") {
         document.getElementById("features-section").classList.remove("d-none");
@@ -19,6 +23,8 @@ function showSection(section) {
         document.getElementById("services-section").classList.remove("d-none");
         } else if (section === "pricing") {
         document.getElementById("pricing-section").classList.remove("d-none");
+        } else if (section === "contacts") {
+        document.getElementById("contacts-section").classList.remove("d-none");
     }
 }
 
@@ -166,6 +172,66 @@ function loadPricing() {
             `;
         });
 }
+
+function loadContacts() {
+    fetch(`${API}/contacts`)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("contacts-list");
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-light table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Contact Info</th>
+                                <th>Selected</th>
+                                <th style="width:180px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(c => `
+                                <tr>
+                                    <td>
+                                        <strong>${c.location}</strong><br>
+                                        <small>Email: ${c.email}</small><br>
+                                        <small>Phone: ${c.phone}</small>
+                                    </td>
+                                    <td>
+                                        ${c.selected
+                                            ? '<span class="badge bg-success">Active</span>'
+                                            : `<button class="btn btn-sm btn-outline-primary"
+                                                        onclick="selectContact('${c._id}')">Select</button>`
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary me-2"
+                                            onclick="openContactEditModal('${c._id}', '${c.location}', '${c.email}', '${c.phone}', ${c.selected})">
+                                            Edit
+                                        </button>
+
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="openContactDeleteModal('${c._id}')">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>`
+                            ).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        });
+}
+
+function selectContact(id) {
+    fetch(`${API}/contacts/select/${id}`, {
+        method: "PATCH"
+    }).then(() => {
+        loadContacts();
+    });
+}
+
 
 /* ========================= FEATURE MODALS ========================= */
 function openFeatureAddModal() {
@@ -394,8 +460,83 @@ function confirmPricingDelete() {
         });
 }
 
+function openContactAddModal() {
+    new bootstrap.Modal(document.getElementById("contactAddModal")).show();
+}
+function closeContactAddModal() {
+    bootstrap.Modal.getInstance(document.getElementById("contactAddModal")).hide();
+}
+
+function addContactFromModal() {
+    const location = document.getElementById("contact-add-location").value.trim();
+    const email = document.getElementById("contact-add-email").value.trim();
+    const phone = document.getElementById("contact-add-phone").value.trim();
+    const selected = document.getElementById("contact-add-selected").checked;
+
+    if (!location || !email || !phone) return alert("All fields required");
+
+    fetch(`${API}/contacts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location, email, phone, selected })
+    }).then(() => {
+        closeContactAddModal();
+        loadContacts();
+    });
+}
+
+function openContactEditModal(id, location, email, phone, selected) {
+    contactEditId = id;
+
+    document.getElementById("contact-edit-location").value = location;
+    document.getElementById("contact-edit-email").value = email;
+    document.getElementById("contact-edit-phone").value = phone;
+    document.getElementById("contact-edit-selected").checked = selected;
+
+    new bootstrap.Modal(document.getElementById("contactEditModal")).show();
+}
+
+function closeContactEditModal() {
+    bootstrap.Modal.getInstance(document.getElementById("contactEditModal")).hide();
+}
+
+function saveContactEdit() {
+    const location = document.getElementById("contact-edit-location").value.trim();
+    const email = document.getElementById("contact-edit-email").value.trim();
+    const phone = document.getElementById("contact-edit-phone").value.trim();
+    const selected = document.getElementById("contact-edit-selected").checked;
+
+    fetch(`${API}/contacts/${contactEditId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location, email, phone, selected })
+    }).then(() => {
+        closeContactEditModal();
+        loadContacts();
+    });
+}
+
+function openContactDeleteModal(id) {
+    contactDeleteId = id;
+    new bootstrap.Modal(document.getElementById("contactDeleteModal")).show();
+}
+
+function closeContactDeleteModal() {
+    bootstrap.Modal.getInstance(document.getElementById("contactDeleteModal")).hide();
+}
+
+function confirmContactDelete() {
+    fetch(`${API}/contacts/${contactDeleteId}`, { method: "DELETE" })
+        .then(() => {
+            closeContactDeleteModal();
+            loadContacts();
+        });
+}
+
+
 /* ========================= INIT ========================= */
 loadFeatures();
 loadServices();
 loadPricing();
+loadContacts();
 showSection("features");

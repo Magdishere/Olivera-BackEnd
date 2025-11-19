@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 
 
 require('dotenv').config();
-const { connectDB, getFeaturesCollection, getServicesCollection, getPricingCollection } = require('./db');
+const { connectDB, getFeaturesCollection, getServicesCollection, getPricingCollection, getContactCollection } = require('./db');
 const { ObjectId } = require('mongodb');
 
 const app = express();
@@ -346,5 +346,109 @@ app.delete('/pricing/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete pricing plan' });
+  }
+});
+
+// GET all contacts
+app.get("/contacts", async (req, res) => {
+  try {
+    const contactCollection = getContactCollection();
+    const contacts = await contactCollection.find({}).toArray();
+    res.json(contacts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch contacts" });
+  }
+});
+
+// CREATE a new contact
+app.post("/contacts", async (req, res) => {
+  try {
+    const contactCollection = getContactCollection();
+    const { location, email, phone } = req.body;
+
+    if (!location || !email || !phone) {
+      return res.status(400).json({ error: "location, email, and phone are required" });
+    }
+
+    const result = await contactCollection.insertOne({
+      location,
+      email,
+      phone,
+      selected: false
+    });
+
+    res.status(201).json({ message: "Contact created", id: result.insertedId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create contact" });
+  }
+});
+
+// UPDATE a contact
+app.put("/contacts/:id", async (req, res) => {
+  try {
+    const contactCollection = getContactCollection();
+    const { id } = req.params;
+    const { location, email, phone } = req.body;
+
+    const result = await contactCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { location, email, phone } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+
+    res.json({ message: "Contact updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update contact" });
+  }
+});
+
+// DELETE a contact
+app.delete("/contacts/:id", async (req, res) => {
+  try {
+    const contactCollection = getContactCollection();
+    const { id } = req.params;
+
+    const result = await contactCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+
+    res.json({ message: "Contact deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete contact" });
+  }
+});
+
+// SELECT a single active contact
+app.put("/contacts/select/:id", async (req, res) => {
+  try {
+    const contactCollection = getContactCollection();
+    const { id } = req.params;
+
+    // Unselect all
+    await contactCollection.updateMany({}, { $set: { selected: false } });
+
+    // Select only this one
+    const result = await contactCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { selected: true } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Contact not found" });
+    }
+
+    res.json({ message: "Selected contact updated" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to select contact" });
   }
 });

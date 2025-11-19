@@ -27,9 +27,14 @@ function getPricingCollection() {
   return db.collection(process.env.PRICING_COLLECTION_NAME);
 }
 
+function getContactCollection() {
+  return db.collection(process.env.CONTACT_COLLECTION_NAME);
+}
+
 module.exports = {
   connectDB,
   getFeaturesCollection,
   getServicesCollection,
   getPricingCollection,
+  getContactCollection,
 };
