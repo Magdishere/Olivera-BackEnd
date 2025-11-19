@@ -186,10 +186,10 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-// // Start server
-// app.listen(port, () => {
-//   console.log(`Server running at https://localhost:${port}`);
-// });
+// Start server
+app.listen(port, () => {
+  console.log(`Server running at https://localhost:${port}`);
+});
 
 //Get all services
 app.get('/services', async (req, res) => {
